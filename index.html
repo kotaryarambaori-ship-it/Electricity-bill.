@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Power Bill Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#14213d;--mut:#5b6478;--line:#dfe3ee;--accent:#f5a300;--on:#14213d;--teal:#0f9d8a;--bad:#c62828;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1628;--card:#17223b;--ink:#eef1f8;--mut:#9aa6c0;--line:#2a3757;--accent:#ffb927;--on:#14213d;--teal:#3ccdb7;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0e1628;--card:#17223b;--ink:#eef1f8;--mut:#9aa6c0;--line:#2a3757;--accent:#ffb927;--on:#14213d;--teal:#3ccdb7;--bad:#ff8a80}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Sora',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0 0 12px}
+.sub{color:var(--mut);font-size:13px;margin:2px 0 14px}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);font:inherit;font-weight:600;padding:10px 4px;border-radius:9px;cursor:pointer}
+.tabs button.on{background:var(--accent);color:var(--on)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px;min-height:44px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.full{grid-column:1/-1}
+.btn{width:100%;border:0;background:var(--accent);color:var(--on);font:inherit;font-weight:600;padding:12px;border-radius:10px;cursor:pointer;min-height:46px}
+.btn.alt{background:none;border:1px solid var(--line);color:var(--ink)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:var(--mut)}
+.big{font-size:26px;font-weight:600;color:var(--teal)}
+.tot{background:var(--accent);color:var(--on);border-radius:10px;padding:12px;margin-top:10px;display:flex;justify-content:space-between;font-weight:600}
+.err{color:var(--bad);font-size:13px;margin:8px 0 0}
+.note{color:var(--mut);font-size:12px;margin-top:10px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item small{color:var(--mut);display:block}
+.x{border:0;background:none;color:var(--bad);font-size:22px;cursor:pointer;min-width:40px;min-height:40px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Power Bill Pro</h1>
+<p class="sub">Bijli ka kharcha aur bill apne aap nikaalo</p>
+<div class="tabs" id="tabs">
+<button class="on" data-t="calc">Calculator</button>
+<button data-t="bill">Bill</button>
+<button data-t="hist">History</button>
+</div>
+
+<section id="calc">
+<div class="card">
+<h2>Appliance jodo</h2>
+<div class="grid">
+<div class="full"><label for="preset">Preset (power badal sakte ho)</label>
+<select id="preset"><option value="">Apna chuno</option><option value="LED bulb|9">LED bulb, 9 W</option><option value="Tube light|20">Tube light, 20 W</option><option value="Ceiling fan|75">Ceiling fan, 75 W</option><option value="Television|100">Television, 100 W</option><option value="Refrigerator|200">Refrigerator, 200 W</option><option value="Washing machine|500">Washing machine, 500 W</option><option value="Laptop|65">Laptop, 65 W</option><option value="Air conditioner|1500">Air conditioner, 1500 W</option><option value="Water heater|2000">Water heater, 2000 W</option><option value="Iron|1000">Iron, 1000 W</option><option value="Water pump|750">Water pump, 750 W</option></select></div>
+<div class="full"><label for="an">Naam</label><input id="an" placeholder="Jaise Ceiling fan"></div>
+<div><label for="aw">Power</label><input id="aw" type="number" min="0" step="any" inputmode="decimal" placeholder="75"></div>
+<div><label for="au">Unit</label><select id="au"><option value="1">Watt (W)</option><option value="1000">Kilowatt (kW)</option><option value="0.001">Milliwatt (mW)</option></select></div>
+<div><label for="aq">Kitne</label><input id="aq" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+<div><label for="ad">Din per month</label><input id="ad" type="number" min="0" max="31" value="30" inputmode="numeric"></div>
+<div><label for="ah">Ghante per din</label><input id="ah" type="number" min="0" step="any" value="5" inputmode="decimal"></div>
+<div><label for="am">Minute per din</label><input id="am" type="number" min="0" step="any" value="0" inputmode="decimal"></div>
+</div>
+<p class="err" id="aerr"></p>
+<button class="btn" id="addA" style="margin-top:10px">Jodo</button>
+</div>
+<div class="card">
+<label for="tar">Bijli ka rate (₹ per unit)</label>
+<input id="tar" type="number" min="0" step="any" value="8" inputmode="decimal">
+<div id="alist" style="margin-top:8px"></div>
+</div>
+<div class="card" id="ares"></div>
+</section>
+
+<section id="bill" class="hide">
+<div class="card">
+<h2>Meter aur consumer</h2>
+<div class="grid">
+<div><label for="bn">Consumer ka naam</label><input id="bn" placeholder="Naam"></div>
+<div><label for="bc">Consumer number</label><input id="bc" placeholder="Number"></div>
+<div><label for="bm">Billing month</label><input id="bm" type="month"></div>
+<div><label for="bx">Meter multiplier</label><input id="bx" type="number" min="0" step="any" value="1" inputmode="decimal"></div>
+<div><label for="bp">Pichhla reading</label><input id="bp" type="number" min="0" step="any" value="1250" inputmode="decimal"></div>
+<div><label for="bq">Abhi ka reading</label><input id="bq" type="number" min="0" step="any" value="1450" inputmode="decimal"></div>
+</div>
+</div>
+<div class="card">
+<h2>Tariff slabs</h2>
+<p class="sub" style="margin-top:-6px">Ye demo rate hain, asli tariff nahi. Apne bill ke hisaab se badlo.</p>
+<div class="grid">
+<div><label for="l1">Slab 1: tak (unit)</label><input id="l1" type="number" min="0" value="100"></div>
+<div><label for="r1">Rate ₹</label><input id="r1" type="number" min="0" step="any" value="3"></div>
+<div><label for="l2">Slab 2: tak (unit)</label><input id="l2" type="number" min="0" value="200"></div>
+<div><label for="r2">Rate ₹</label><input id="r2" type="number" min="0" step="any" value="5"></div>
+<div><label for="l3">Slab 3: tak (unit)</label><input id="l3" type="number" min="0" value="300"></div>
+<div><label for="r3">Rate ₹</label><input id="r3" type="number" min="0" step="any" value="7"></div>
+<div class="full"><label for="r4">Uske upar rate ₹</label><input id="r4" type="number" min="0" step="any" value="8"></div>
+</div>
+</div>
+<div class="card">
+<h2>Baaki charges</h2>
+<div class="grid">
+<div><label for="fx">Fixed charge ₹</label><input id="fx" type="number" min="0" step="any" value="0"></div>
+<div><label for="du">Duty %</label><input id="du" type="number" min="0" step="any" value="0"></div>
+<div><label for="ot">Other charges ₹</label><input id="ot" type="number" min="0" step="any" value="0"></div>
+<div><label for="sb">Subsidy ₹</label><input id="sb" type="number" min="0" step="any" value="0"></div>
+<div><label for="lf">Late fee ₹</label><input id="lf" type="number" min="0" step="any" value="0"></div>
+<div><label for="po">Pichhla baaki ₹</label><input id="po" type="number" min="0" step="any" value="0"></div>
+<div class="full"><label for="pd">Ab tak diya gaya ₹</label><input id="pd" type="number" min="0" step="any" value="0"></div>
+</div>
+</div>
+<div class="card" id="bres"></div>
+<button class="btn" id="saveB">Bill history me save karo</button>
+<p class="note" id="smsg"></p>
+</section>
+
+<section id="hist" class="hide">
+<div class="card" id="auth"><h2>Login ya register</h2>
+<div class="grid"><div class="full"><label for="em">Email</label><input id="em" type="email" autocomplete="email"></div>
+<div class="full"><label for="pw">Password (6+ akshar)</label><input id="pw" type="password" autocomplete="current-password"></div>
+<div><button class="btn" id="lg">Login</button></div><div><button class="btn alt" id="rg">Register</button></div></div>
+<p class="err" id="aerr2"></p></div>
+<button class="btn alt hide" id="lo" style="margin-bottom:14px">Logout</button>
+<div class="card"><h2>Purane bills</h2><div id="hlist"></div></div>
+<button class="btn alt" id="clr">Sab history hatao</button>
+</section>
+
+<p class="note">Ye aapki personal calculation hai, kisi bijli company ka official bill nahi. Asli use alag-alag appliance aur halat ke hisaab se badalta hai.</p>
+</div>
+<script>
+var $=function(i){return document.getElementById(i)};
+var n=function(i){var v=parseFloat($(i).value);return isNaN(v)?0:v};
+var f=function(x){return Number(x).toLocaleString('en-IN',{maximumFractionDigits:2})};
+var rs=function(x){return '₹'+f(x)};
+var apps=[],KA='pbp_apps';
+function load(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+apps=load(KA);
+
+document.querySelectorAll('#tabs button').forEach(function(b){b.onclick=function(){
+document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x===b)});
+['calc','bill','hist'].forEach(function(s){$(s).classList.toggle('hide',s!==b.dataset.t)});
+if(b.dataset.t==='hist')renderH();}});
+
+$('preset').onchange=function(){var v=this.value.split('|');if(v.length===2){$('an').value=v[0];$('aw').value=v[1];$('au').value='1'}};
+
+function aCalc(a){var w=a.watts*a.qty;var hrs=a.h+a.m/60;var du=w*hrs/1000;return{du:du,mu:du*a.days,w:w}}
+
+$('addA').onclick=function(){
+var e=$('aerr');e.textContent='';
+var a={name:$('an').value.trim()||'Appliance',watts:n('aw')*parseFloat($('au').value),qty:n('aq'),days:n('ad'),h:n('ah'),m:n('am')};
+if(!(a.watts>0))return e.textContent='Power 0 se zyada daalo.';
+if(!(a.qty>=1))return e.textContent='Kam se kam 1 appliance chahiye.';
+if(a.h<0||a.m<0||a.h+a.m/60>24)return e.textContent='Roz ka time 0 se 24 ghante ke beech hona chahiye.';
+if(a.days<0||a.days>31)return e.textContent='Din 0 se 31 ke beech daalo.';
+apps.push(a);save(KA,apps);$('an').value='';$('aw').value='';$('preset').value='';renderA();};
+
+function renderA(){
+var t=n('tar'),L=$('alist'),R=$('ares');
+if(!apps.length){L.innerHTML='';R.innerHTML='<p class="sub" style="margin:0">Pehla appliance jodo, phir yahan units aur kharcha dikhega.</p>';return}
+var tdu=0,tmu=0,tw=0,h='';
+apps.forEach(function(a,i){var c=aCalc(a);tdu+=c.du;tmu+=c.mu;tw+=c.w;
+h+='<div class="item"><div>'+esc(a.name)+' x'+a.qty+'<small>'+f(a.watts)+' W, '+f(a.h+a.m/60)+' ghante/din, '+f(c.mu)+' unit/month = '+rs(c.mu*t)+'</small></div><button class="x" data-i="'+i+'" aria-label="Hatao">×</button></div>'});
+L.innerHTML=h;
+L.querySelectorAll('.x').forEach(function(b){b.onclick=function(){apps.splice(+b.dataset.i,1);save(KA,apps);renderA()}});
+R.innerHTML='<h2>Hisaab</h2><div class="big">'+rs(tmu*t)+' <span style="font-size:14px;color:var(--mut);font-weight:400">per month</span></div>'+
+row('Roz ke unit',f(tdu)+' kWh')+row('Monthly unit',f(tmu)+' kWh')+row('Saal ke unit (12 mahine)',f(tmu*12)+' kWh')+
+row('Roz ka kharcha',rs(tdu*t))+row('Monthly kharcha',rs(tmu*t))+row('Saal ka kharcha',rs(tmu*12*t))+
+row('Total load',f(tw)+' W ('+f(tw/1000)+' kW)')+
+'<p class="note">Formula: unit = (Watt x kitne x ghante) / 1000. 30 minute = 0.5 ghanta.</p>';}
+function row(a,b){return '<div class="row"><span>'+a+'</span><span>'+b+'</span></div>'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+$('tar').oninput=renderA;
+
+function slabs(u){
+var lim=[n('l1'),n('l2'),n('l3')],rt=[n('r1'),n('r2'),n('r3'),n('r4')],prev=0,out=[],tot=0;
+for(var i=0;i<3;i++){var top=Math.min(u,lim[i]);var q=top-prev;if(q>0){out.push({q:q,r:rt[i],a:q*rt[i]});tot+=q*rt[i];prev=top}else if(lim[i]>prev)prev=Math.min(u,lim[i])}
+if(u>prev){var q2=u-prev;out.push({q:q2,r:rt[3],a:q2*rt[3]});tot+=q2*rt[3]}
+return{parts:out,total:tot}}
+
+var last=null;
+function bCalc(){
+var R=$('bres'),p=n('bp'),c=n('bq'),m=n('bx');last=null;
+if(c<p){R.innerHTML='<p class="err" style="margin:0">Abhi ka reading pichhle se kam hai. Reading dobara check karo.</p>';return}
+if(!(m>0)){R.innerHTML='<p class="err" style="margin:0">Multiplier 0 se zyada hona chahiye.</p>';return}
+var u=(c-p)*m,s=slabs(u),en=s.total,duty=en*n('du')/100;
+var cur=en+n('fx')+duty+n('ot')+n('lf')-n('sb');
+if(cur<0)cur=0;
+var pay=cur+n('po'),rem=pay-n('pd');
+var h='<h2>Bill ka hisaab</h2>'+row('Units consumed',f(u)+' kWh');
+s.parts.forEach(function(x){h+=row(f(x.q)+' unit x ₹'+f(x.r),rs(x.a))});
+h+=row('Energy charge',rs(en))+row('Fixed charge',rs(n('fx')))+row('Electricity duty',rs(duty))+row('Other charges',rs(n('ot')))+row('Late fee',rs(n('lf')))+row('Subsidy','- '+rs(n('sb')))+
+'<div class="tot"><span>Is mahine ka bill</span><span>'+rs(cur)+'</span></div>'+
+row('Pichhla baaki',rs(n('po')))+row('Total dena hai',rs(pay))+row('Ab tak diya',rs(n('pd')))+
+'<div class="tot" style="background:var(--teal);color:#fff"><span>Baaki balance</span><span>'+rs(rem)+'</span></div>';
+R.innerHTML=h;
+last={name:$('bn').value.trim()||'Bina naam',no:$('bc').value.trim(),month:$('bm').value,units:u,energy:en,current:cur,payable:pay,remaining:rem}}
+document.querySelectorAll('#bill input').forEach(function(i){i.oninput=bCalc});
+
+var TK=null;try{TK=localStorage.getItem('pbp_token')}catch(e){}
+function api(p,m,b){var h={'Content-Type':'application/json'};if(TK)h.Authorization='Bearer '+TK;return fetch(p,{method:m||'GET',headers:h,body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||'Error');return j})})}
+function setTk(t){TK=t;try{t?localStorage.setItem('pbp_token',t):localStorage.removeItem('pbp_token')}catch(e){}}
+function doAuth(k){$('aerr2').textContent='';api('/api/auth/'+k,'POST',{email:$('em').value,password:$('pw').value}).then(function(j){setTk(j.token);$('pw').value='';renderH()}).catch(function(e){$('aerr2').textContent=e.message})}
+$('lg').onclick=function(){doAuth('login')};
+$('rg').onclick=function(){doAuth('register')};
+$('lo').onclick=function(){setTk(null);renderH()};
+
+function renderH(){
+$('auth').classList.toggle('hide',!!TK);$('lo').classList.toggle('hide',!TK);
+var L=$('hlist');
+if(!TK){L.innerHTML='<p class="sub" style="margin:0">Bill dekhne ke liye login karo.</p>';return}
+api('/api/bills').then(function(h){
+if(!h.length){L.innerHTML='<p class="sub" style="margin:0">Abhi koi bill save nahi hai.</p>';return}
+L.innerHTML=h.map(function(b){return '<div class="item"><div>'+esc(b.name||'')+(b.consumer_no?' ('+esc(b.consumer_no)+')':'')+'<small>'+esc(b.month||'')+': '+f(Number(b.units))+' unit, bill '+rs(Number(b.current_amt))+', baaki '+rs(Number(b.remaining))+'</small></div><button class="x" data-id="'+b.id+'" aria-label="Hatao">×</button></div>'}).join('');
+L.querySelectorAll('.x').forEach(function(x){x.onclick=function(){api('/api/bills/'+x.dataset.id,'DELETE').then(renderH)}})
+}).catch(function(e){if(/login/i.test(e.message)){setTk(null);renderH()}else L.innerHTML='<p class="err">'+esc(e.message)+'</p>'})}
+
+$('saveB').onclick=function(){
+if(!last){$('smsg').textContent='Pehle sahi reading daalo.';return}
+if(!TK){$('smsg').textContent='Save karne ke liye pehle History tab me login karo.';return}
+api('/api/bills','POST',last).then(function(){$('smsg').textContent='Database me save ho gaya. History tab me dekho.'}).catch(function(e){$('smsg').textContent=e.message})};
+$('clr').onclick=function(){if(TK)api('/api/bills','DELETE').then(renderH)};
+
+var d=new Date();$('bm').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);
+renderA();bCalc();
+</script>
+</body>
+  </html>
